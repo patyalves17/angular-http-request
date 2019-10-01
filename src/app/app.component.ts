@@ -1,5 +1,7 @@
+import { Post } from './posts.interface';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -7,17 +9,20 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  loadedPosts = [];
+  loadedPosts: Post[] = [];
+  isFetching = false;
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.onFetchPosts();
+  }
 
-  onCreatePost(postData: { title: string; content: string }) {
+  onCreatePost(postData: Post) {
     // Send Http request
     this.http
-      .post(
-        'https://ng-complete-guide-c56d3.firebaseio.com/posts.json',
+      .post<{ name: string }>(
+        'https://irobot-4af1e.firebaseio.com/posts.json',
         postData
       )
       .subscribe(responseData => {
@@ -27,6 +32,24 @@ export class AppComponent implements OnInit {
 
   onFetchPosts() {
     // Send Http request
+    this.isFetching = true;
+    this.http
+      .get<Post[]>('https://irobot-4af1e.firebaseio.com/posts.json')
+      .pipe(
+        map(reponseData => {
+          const postArray: Post[] = [];
+          for (const key in reponseData) {
+            if (reponseData.hasOwnProperty(key)) {
+              postArray.push({ ...reponseData[key], id: key });
+            }
+          }
+          return postArray;
+        })
+      )
+      .subscribe(posts => {
+        this.isFetching = false;
+        this.loadedPosts = posts;
+      });
   }
 
   onClearPosts() {
