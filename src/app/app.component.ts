@@ -23,6 +23,7 @@ export class AppComponent implements OnInit {
     // Send Http request
     this.postService.createPost(postData).subscribe(responseData => {
       console.log(responseData);
+      this.onFetchPosts();
     });
   }
 
@@ -36,5 +37,9 @@ export class AppComponent implements OnInit {
 
   onClearPosts() {
     // Send Http request
+    this.postService.deletePosts().subscribe(response => {
+      console.log(response);
+      this.loadedPosts = [];
+    });
   }
 }

@@ -29,4 +29,8 @@ export class PostService {
         })
       );
   }
+
+  deletePosts() {
+    return this.http.delete('https://irobot-4af1e.firebaseio.com/posts.json');
+  }
 }
