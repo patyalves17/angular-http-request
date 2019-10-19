@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Post } from './posts.interface';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { map, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
@@ -15,8 +16,16 @@ export class PostService {
   }
 
   fetchPosts() {
+    let customParams = new HttpParams();
+    customParams = customParams.append('print', 'pretty');
+    customParams = customParams.append('custom', 'key');
+
     return this.http
-      .get<Post[]>('https://irobot-4af1e.firebaseio.com/posts.json')
+      .get<Post[]>('https://irobot-4af1e.firebaseio.com/posts.json', {
+        headers: new HttpHeaders({ 'Custom-Header': 'Hello' }),
+        params: customParams
+        // params: new HttpParams().set('print', 'pretty')
+      })
       .pipe(
         map(reponseData => {
           const postArray: Post[] = [];
@@ -26,6 +35,10 @@ export class PostService {
             }
           }
           return postArray;
+        }),
+        catchError(errorRes => {
+          // maybe  send to analytics
+          return throwError(errorRes);
         })
       );
   }
