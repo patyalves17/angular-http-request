@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Post } from './posts.interface';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { map, catchError } from 'rxjs/operators';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams,
+  HttpEventType
+} from '@angular/common/http';
+import { map, catchError, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -11,7 +16,10 @@ export class PostService {
   createPost(postData: Post) {
     return this.http.post<{ name: string }>(
       'https://irobot-4af1e.firebaseio.com/posts.json',
-      postData
+      postData,
+      {
+        observe: 'response'
+      }
     );
   }
 
@@ -44,6 +52,17 @@ export class PostService {
   }
 
   deletePosts() {
-    return this.http.delete('https://irobot-4af1e.firebaseio.com/posts.json');
+    return this.http
+      .delete('https://irobot-4af1e.firebaseio.com/posts.json', {
+        observe: 'events'
+      })
+      .pipe(
+        tap(event => {
+          console.log(event);
+          if (event.type === HttpEventType.Response) {
+            console.log(event.body);
+          }
+        })
+      );
   }
 }
