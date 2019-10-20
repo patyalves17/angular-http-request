@@ -31,7 +31,8 @@ export class PostService {
     return this.http
       .get<Post[]>('https://irobot-4af1e.firebaseio.com/posts.json', {
         headers: new HttpHeaders({ 'Custom-Header': 'Hello' }),
-        params: customParams
+        params: customParams,
+        responseType: 'json'
         // params: new HttpParams().set('print', 'pretty')
       })
       .pipe(
@@ -54,7 +55,8 @@ export class PostService {
   deletePosts() {
     return this.http
       .delete('https://irobot-4af1e.firebaseio.com/posts.json', {
-        observe: 'events'
+        observe: 'events',
+        responseType: 'text'
       })
       .pipe(
         tap(event => {
