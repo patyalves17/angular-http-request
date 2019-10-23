@@ -17,14 +17,14 @@ export class AppComponent implements OnInit {
   constructor(private http: HttpClient, private postService: PostService) {}
 
   ngOnInit() {
-    this.onFetchPosts();
+    // this.onFetchPosts();
   }
 
   onCreatePost(postData: Post) {
     // Send Http request
     this.postService.createPost(postData).subscribe(responseData => {
       console.log(responseData);
-      this.onFetchPosts();
+      // this.onFetchPosts();
     });
   }
 
